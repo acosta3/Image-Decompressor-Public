@@ -1,0 +1,177 @@
+
+State Machine - |project|top_state
+Name top_state.state_bit_2 top_state.state_bit_1 top_state.state_bit_0 
+top_state.S_IDLE 0 0 0 
+top_state.S_UART_RX 0 0 1 
+top_state.S_M1 0 1 1 
+top_state.S_M2 1 1 0 
+top_state.S_M3 0 1 0 
+
+State Machine - |project|M3:M3_Unit|M3_state
+Name M3_state.state_bit_3 M3_state.state_bit_2 M3_state.state_bit_1 M3_state.state_bit_0 
+M3_state.S_IDLE_M3 0 0 0 0 
+M3_state.S_THE_HUB 1 0 0 0 
+M3_state.S_READ_16_BIT_1 0 0 0 1 
+M3_state.S_READ_16_BIT_2 0 0 1 0 
+M3_state.S_READ_16_BIT_3 0 0 1 1 
+M3_state.S_READ_16_BIT_4 0 1 0 0 
+M3_state.S_WRITE_WORD_2 0 1 0 1 
+M3_state.S_WRITE_WORD_3 0 1 1 0 
+M3_state.S_WRITE_WORD_4 0 1 1 1 
+M3_state.S_00X 1 0 0 1 
+M3_state.S_01X 1 0 1 0 
+M3_state.S_100 1 1 0 0 
+M3_state.S_101 1 1 0 1 
+M3_state.S_110 1 1 1 0 
+M3_state.S_111 1 1 1 1 
+M3_state.S_DEQUANT 1 0 1 1 
+
+State Machine - |project|M2:M2_Unit|M2_state
+Name M2_state.state_bit_6 M2_state.state_bit_5 M2_state.state_bit_4 M2_state.state_bit_3 M2_state.state_bit_2 M2_state.state_bit_1 M2_state.state_bit_0 
+M2_state.S_IDLE_M2 0 0 0 0 0 0 0 
+M2_state.S_LEADIN_Fs_0 0 0 0 0 0 0 1 
+M2_state.S_LEADIN_Fs_1 0 0 0 0 0 1 1 
+M2_state.S_LEADIN_Fs_2 0 0 0 0 0 1 0 
+M2_state.S_LEADIN_Fs_3 0 0 0 0 1 0 0 
+M2_state.S_LEADIN_CC_Fs 0 0 0 0 1 0 1 
+M2_state.S_LEADOUT_Fs_0 0 0 0 0 1 1 0 
+M2_state.S_LEADOUT_Fs_1 0 0 0 0 1 1 1 
+M2_state.S_LEADOUT_Fs_2 0 0 0 1 0 0 0 
+M2_state.S_LEADIN_CT_0_0 0 0 0 1 0 1 0 
+M2_state.S_LEADIN_CT_0 0 0 0 1 0 0 1 
+M2_state.S_LEADIN_CT_1 0 0 0 1 0 1 1 
+M2_state.S_LEADIN_CT_2 0 0 0 1 1 0 0 
+M2_state.S_LEADIN_CT_3 0 0 0 1 1 0 1 
+M2_state.S_LEADIN_CT_4 0 0 0 1 1 1 0 
+M2_state.S_LEADIN_CT_5 0 0 0 1 1 1 1 
+M2_state.S_LEADIN_CT_6 0 0 1 0 0 0 0 
+M2_state.S_LEADIN_CT_7 0 0 1 0 0 0 1 
+M2_state.S_LEADIN_CT_8 0 0 1 0 0 1 0 
+M2_state.S_CC_CT_0 0 0 1 0 0 1 1 
+M2_state.S_CC_CT_1 0 0 1 0 1 0 0 
+M2_state.S_CC_CT_2 0 0 1 0 1 0 1 
+M2_state.S_CC_CT_3 0 0 1 0 1 1 0 
+M2_state.S_CC_CT_4 0 0 1 0 1 1 1 
+M2_state.S_CC_CT_5 0 0 1 1 0 0 0 
+M2_state.S_CC_CT_6 0 0 1 1 0 0 1 
+M2_state.S_CC_CT_7 0 0 1 1 0 1 0 
+M2_state.S_CC_CT_LO_0 0 0 1 1 0 1 1 
+M2_state.S_CC_CT_LO_1 0 0 1 1 1 0 0 
+M2_state.S_CS_FS_LI_0 0 0 1 1 1 0 1 
+M2_state.S_CS_FS_LI_1 0 0 1 1 1 1 0 
+M2_state.S_CS_FS_LI_2 0 0 1 1 1 1 1 
+M2_state.S_CS_FS_LI_3 0 1 0 0 0 0 0 
+M2_state.S_CS_FS_LI_4 0 1 0 0 0 0 1 
+M2_state.S_CS_FS_LI_5 0 1 0 0 0 1 0 
+M2_state.S_CS_FS_LI_6 0 1 0 0 0 1 1 
+M2_state.S_CS_FS_LI_7 0 1 0 0 1 0 0 
+M2_state.S_CS_FS_LI_8 0 1 0 0 1 0 1 
+M2_state.S_CS_FS_CC_0 0 1 0 0 1 1 0 
+M2_state.S_CS_FS_CC_1 0 1 0 0 1 1 1 
+M2_state.S_CS_FS_CC_2 0 1 0 1 0 0 0 
+M2_state.S_CS_FS_CC_3 0 1 0 1 0 0 1 
+M2_state.S_CS_FS_CC_4 0 1 0 1 0 1 0 
+M2_state.S_CS_FS_CC_5 0 1 0 1 0 1 1 
+M2_state.S_CS_FS_CC_6 0 1 0 1 1 0 0 
+M2_state.S_CS_FS_CC_7 0 1 0 1 1 0 1 
+M2_state.S_CS_FS_LO_0 0 1 0 1 1 1 0 
+M2_state.S_CS_FS_LO_2 0 1 0 1 1 1 1 
+M2_state.S_WS_CT_LI_0 0 1 1 0 0 0 0 
+M2_state.S_WS_CT_LI_1 0 1 1 0 0 0 1 
+M2_state.S_WS_CT_LI_2 0 1 1 0 0 1 0 
+M2_state.S_WS_CT_LI_3 0 1 1 0 0 1 1 
+M2_state.S_WS_CT_LI_4 0 1 1 0 1 0 0 
+M2_state.S_WS_CT_LI_5 0 1 1 0 1 0 1 
+M2_state.S_WS_CT_LI_6 0 1 1 0 1 1 0 
+M2_state.S_WS_CT_LI_7 0 1 1 0 1 1 1 
+M2_state.S_WS_CT_LI_8 0 1 1 1 0 0 0 
+M2_state.S_WS_CT_LI_9 0 1 1 1 0 0 1 
+M2_state.S_WS_CT_CC_0 0 1 1 1 0 1 0 
+M2_state.S_WS_CT_CC_1 0 1 1 1 1 0 0 
+M2_state.S_WS_CT_CC_2 0 1 1 1 1 0 1 
+M2_state.S_WS_CT_CC_3 0 1 1 1 1 1 0 
+M2_state.S_WS_CT_CC_4 0 1 1 1 1 1 1 
+M2_state.S_WS_CT_CC_5 1 0 0 0 0 0 0 
+M2_state.S_WS_CT_CC_6 1 0 0 0 0 0 1 
+M2_state.S_WS_CT_CC_7 1 0 0 0 0 1 0 
+M2_state.S_LAST_WRITE_LI_0 1 0 0 0 1 1 0 
+M2_state.S_LAST_WRITE_LI_1 1 0 0 0 1 0 1 
+M2_state.S_LAST_WRITE_LI_2 1 0 0 0 1 0 0 
+M2_state.S_LAST_WRITE_LI_3 1 0 0 0 0 1 1 
+M2_state.S_LAST_WRITE_LO_0 0 1 1 1 0 1 1 
+
+State Machine - |project|M1:M1_Unit|M1_state
+Name M1_state.state_bit_5 M1_state.state_bit_4 M1_state.state_bit_3 M1_state.state_bit_2 M1_state.state_bit_1 M1_state.state_bit_0 
+M1_state.S_LEADIN_0 0 0 0 0 0 0 
+M1_state.S_LEADIN_1 0 0 0 0 0 1 
+M1_state.S_LEADIN_2 0 0 0 0 1 1 
+M1_state.S_LEADIN_3 0 0 0 0 1 0 
+M1_state.S_LEADIN_4 0 0 0 1 0 0 
+M1_state.S_LEADIN_5 0 0 0 1 0 1 
+M1_state.S_LEADIN_6 0 0 0 1 1 0 
+M1_state.S_LEADIN_7 0 0 0 1 1 1 
+M1_state.S_LEADIN_8 0 0 1 0 0 0 
+M1_state.S_LEADIN_9 0 0 1 0 0 1 
+M1_state.S_LEADIN_10 0 0 1 0 1 0 
+M1_state.S_LEADIN_11 0 0 1 0 1 1 
+M1_state.S_LEADIN_12 0 0 1 1 0 0 
+M1_state.S_LEADIN_13 0 0 1 1 0 1 
+M1_state.S_LEADIN_14 0 0 1 1 1 0 
+M1_state.S_LEADIN_15 0 0 1 1 1 1 
+M1_state.S_LEADIN_16 0 1 0 0 0 0 
+M1_state.S_LEADIN_17 0 1 0 0 0 1 
+M1_state.CC_0 0 1 0 0 1 0 
+M1_state.CC_1 0 1 0 0 1 1 
+M1_state.CC_2 0 1 0 1 0 0 
+M1_state.CC_3 0 1 0 1 0 1 
+M1_state.CC_4 0 1 0 1 1 0 
+M1_state.CC_5 0 1 0 1 1 1 
+M1_state.CC_6 0 1 1 0 0 0 
+M1_state.S_LEADOUT_0 0 1 1 0 0 1 
+M1_state.S_LEADOUT_1 0 1 1 0 1 0 
+M1_state.S_LEADOUT_2 0 1 1 0 1 1 
+M1_state.S_LEADOUT_3 0 1 1 1 0 0 
+M1_state.S_LEADOUT_4 0 1 1 1 0 1 
+M1_state.S_LEADOUT_5 0 1 1 1 1 0 
+M1_state.S_LEADOUT_6 0 1 1 1 1 1 
+M1_state.S_LEADOUT_7 1 0 0 0 0 0 
+M1_state.S_LEADOUT_8 1 0 0 0 0 1 
+M1_state.S_LEADOUT_9 1 0 0 0 1 0 
+M1_state.S_LEADOUT_10 1 0 0 0 1 1 
+M1_state.S_LEADOUT_11 1 0 0 1 0 0 
+M1_state.S_LEADOUT_12 1 0 0 1 0 1 
+M1_state.S_LEADOUT_13 1 0 0 1 1 0 
+M1_state.S_LEADOUT_14 1 0 0 1 1 1 
+M1_state.S_LEADOUT_15 1 0 1 0 0 0 
+M1_state.S_LEADOUT_16 1 0 1 0 0 1 
+M1_state.S_LEADOUT_17 1 0 1 0 1 0 
+
+State Machine - |project|UART_SRAM_interface:UART_unit|UART_SRAM_state
+Name UART_SRAM_state.state_bit_2 UART_SRAM_state.state_bit_1 UART_SRAM_state.state_bit_0 
+UART_SRAM_state.S_US_IDLE 0 0 0 
+UART_SRAM_state.S_US_STRIP_FILE_HEADER_1 1 0 1 
+UART_SRAM_state.S_US_STRIP_FILE_HEADER_2 0 1 0 
+UART_SRAM_state.S_US_START_FIRST_BYTE_RECEIVE 0 0 1 
+UART_SRAM_state.S_US_WRITE_FIRST_BYTE 1 0 0 
+UART_SRAM_state.S_US_START_SECOND_BYTE_RECEIVE 1 1 0 
+UART_SRAM_state.S_US_WRITE_SECOND_BYTE 0 1 1 
+
+State Machine - |project|UART_SRAM_interface:UART_unit|UART_receive_controller:UART_RX|RXC_state
+Name RXC_state.state_bit_1 RXC_state.state_bit_0 
+RXC_state.S_RXC_IDLE 0 0 
+RXC_state.S_RXC_SYNC 0 1 
+RXC_state.S_RXC_ASSEMBLE_DATA 1 0 
+RXC_state.S_RXC_STOP_BIT 1 1 
+
+State Machine - |project|VGA_SRAM_interface:VGA_unit|VGA_SRAM_state
+Name VGA_SRAM_state.state_bit_3 VGA_SRAM_state.state_bit_2 VGA_SRAM_state.state_bit_1 VGA_SRAM_state.state_bit_0 
+VGA_SRAM_state.S_VS_WAIT_NEW_PIXEL_ROW 0 0 0 0 
+VGA_SRAM_state.S_VS_NEW_PIXEL_ROW_DELAY_1 1 0 0 0 
+VGA_SRAM_state.S_VS_NEW_PIXEL_ROW_DELAY_2 1 0 0 1 
+VGA_SRAM_state.S_VS_NEW_PIXEL_ROW_DELAY_3 0 0 0 1 
+VGA_SRAM_state.S_VS_NEW_PIXEL_ROW_DELAY_4 0 0 1 0 
+VGA_SRAM_state.S_VS_NEW_PIXEL_ROW_DELAY_5 1 0 1 0 
+VGA_SRAM_state.S_VS_FETCH_PIXEL_DATA_0 0 0 1 1 
+VGA_SRAM_state.S_VS_FETCH_PIXEL_DATA_1 1 0 1 1 
+VGA_SRAM_state.S_VS_FETCH_PIXEL_DATA_2 1 1 0 0 
+VGA_SRAM_state.S_VS_FETCH_PIXEL_DATA_3 0 1 0 0 

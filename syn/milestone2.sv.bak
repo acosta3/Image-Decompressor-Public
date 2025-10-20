@@ -1,0 +1,34 @@
+
+`timescale 1ns/100ps
+`ifndef DISABLE_DEFAULT_NET
+`default_nettype none
+`endif
+
+`include "define_state.h"
+
+`include "define_state.h"
+
+// It connects the UART, SRAM and VGA together.
+// It gives access to the SRAM for UART and VGA
+module milestone2 (
+    input logic CLOCK_50_I,
+	 input logic resetn,
+	 input logic [15:0]SRAM_read_data,
+	 input logic M2_start,
+	 
+	 output logic SRAM_we_n,
+    output logic M2_done,
+	 output logic  [15:0] SRAM_write_data,
+	 output logic [17:0] SRAM_address
+
+);
+
+
+M2_state_type M2_state;
+
+parameter Y_prime_offset = 18'd76800,
+          U_prime_offset = 18'd153600,
+			 V_prime_offset = 18'd192000,
+			 Y_offset = 18'd0,
+			 U_offset = 18'd38400,
+			 V_offset = 18'd57600;

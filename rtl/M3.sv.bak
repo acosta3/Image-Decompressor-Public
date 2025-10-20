@@ -1,0 +1,382 @@
+
+`timescale 1ns/100ps
+`ifndef DISABLE_DEFAULT_NET
+`default_nettype none
+`endif
+
+`include "define_state.h"
+
+
+// It connects the UART, SRAM and VGA together.
+// It gives access to the SRAM for UART and VGA
+module M3 (
+    input logic Clock_50,
+	 input logic Resetn,
+	 input logic [15:0]SRAM_read_data,
+	 input logic M3_start,
+	 
+	 output logic SRAM_we_n,
+    output logic M3_done,
+	 output logic  [15:0] SRAM_write_data,
+	 output logic [17:0] SRAM_address
+
+);
+
+
+M3_state_type M3_state;
+
+
+
+parameter mic_base_address = 18'd0;
+
+///
+//	S_IDLE_M3,
+//   S_READ_16_BIT_1,
+//	S_READ_16_BIT_2,
+//	S_READ_16_BIT_3,
+//	S_READ_16_BIT_4,
+//	S_0XX,
+//	S_01X,
+//	S_100,
+//	,
+//	S_110,
+//	S_111,
+//	S_DEQUANT;
+
+
+logic [11:0] SRAM_read_counter;
+logic [63:0] mic_data;
+logic [5:0] sample_counter;
+logic [11:0] block_counter;
+logic [8:0] pre_dequant; 
+logic [7:0] shift_counter;
+logic [6:0] element_counter;
+logic [7:0] ZZC;
+logic ZZC_EN;
+
+always_ff @ (posedge Clock_50 or negedge Resetn) begin
+
+	if (~Resetn) begin
+	
+	SRAM_read_counter<= 12'd0;
+	mic_data<=64'd0;
+	sample_counter<= 6'd0;
+	block_counter<=12'd0;
+	pre_dequant<= 9'd0;
+	shift_counter<=8'd0;
+	element_counter<=8'd0;
+	ZZC_EN<=0;
+	end else begin
+
+// READ FIRST 3 S PRIME VALUES 
+	case (M3_state)
+		
+		S_IDLE_M3: begin
+		M3_state<= S_IDLE_M3;
+		
+		if (M3_start == 1'b1) begin
+		M3_state<= S_READ_16_BIT_1;
+		end
+		
+		end
+		
+		S_READ_16_BIT_1: begin
+		
+		// READ FIRST 16 BIT VALUE - DE
+		SRAM_address<=mic_base_address+ SRAM_read_counter;
+		SRAM_we_n <= 1;
+		SRAM_read_counter<=SRAM_read_counter+1'd1;
+		
+		
+		
+		M3_state<= S_READ_16_BIT_2;
+		end
+		
+		S_READ_16_BIT_2: begin
+		
+		// READ SECOND 16 BIT VALUE AD
+		SRAM_address<=mic_base_address+ SRAM_read_counter;
+		SRAM_we_n <= 1;
+		SRAM_read_counter<=SRAM_read_counter+1'd1;
+		
+		M3_state<= S_READ_16_BIT_3;
+		end
+		
+		S_READ_16_BIT_3: begin
+		
+		// READ 3RD BIT VALUE - BE
+		SRAM_address<=mic_base_address+ SRAM_read_counter;
+		SRAM_we_n <= 1;
+		SRAM_read_counter<=SRAM_read_counter+1'd1;
+		
+		
+		M3_state<= S_READ_16_BIT_4;
+		end
+		
+		S_READ_16_BIT_4: begin
+		
+		// READ 3RD BIT VALUE - EF
+		SRAM_address<=mic_base_address+ SRAM_read_counter;
+		SRAM_we_n <= 1;
+		SRAM_read_counter<=SRAM_read_counter+1'd1;
+		
+		
+		// DE IS AVAILABLE HERE
+		mic_data[15:0] <= SRAM_read_data;
+		
+		
+		
+		M3_state<= S_WRITE_WORD_2;
+		end
+		
+		S_WRITE_WORD_2: begin
+		
+			
+		// AD IS AVAILABLE HERE
+		mic_data[31:16]<=mic_data[15:0];
+		mic_data[15:0] <= SRAM_read_data;
+		
+		M3_state<= S_WRITE_WORD_3;
+		end
+		
+		S_WRITE_WORD_3: begin
+		
+		
+			// BE IS AVAILABLE HERE
+		mic_data[47:32]<=mic_data[31:16];
+		mic_data[31:16]<=mic_data[15:0];
+		mic_data[15:0] <= SRAM_read_data;
+		
+		
+		M3_state<= S_WRITE_WORD_4;
+		end
+		
+		S_WRITE_WORD_4: begin
+		
+			// EF IS AVAILABLE HERE
+		mic_data[63:48]<=mic_data[47:32];
+		mic_data[47:32]<=mic_data[31:16];
+		mic_data[31:16]<=mic_data[15:0];
+		mic_data[15:0] <= SRAM_read_data;
+		// BEEF FILLED IN HERE :)
+		
+		
+		M3_state<= S_THE_HUB;
+		end
+		
+		
+		// NEED 3 MORE STATES TO LOAD IN VALUES.
+		
+		
+		S_THE_HUB: begin
+		
+		
+		// do the shifts based on the shift counter 
+		
+		// 63:53 = 52:42
+		//mic_data[63:((63-shift_counter)+1'd1)] = mic_data[((63-shift_counter)):(((63-shift_counter)-shift_counter)+1'd1)];
+		// multiplication wrong not padding by zeros 
+		mic_data <= mic_data<<shift_counter;
+		// shift counter changes based on state
+		shift_counter<=0;
+		
+		// if you have read 16 bits then you have enough space to read in from SRAM into LSB
+		
+		//when reading zeros elemtn counter wud update to 64 immediately
+		if (element_counter > 6'd15)begin
+		
+		// VALUE ONLY AVAILABLE 2 CC LATER  example hub -> s00x -> dequant 
+		SRAM_address<=mic_base_address+ SRAM_read_counter;
+		SRAM_we_n <= 1;
+		SRAM_read_counter<=SRAM_read_counter+1'd1;
+		
+		// keeps updating until actual value is reached.
+		
+		mic_data[15:0] <= SRAM_read_data;
+	
+		end
+		
+		
+		// read 3 MSB of mic_data to determine the code 
+		M3_state<= S_111; 
+		//00x
+		if ((mic_data[63:61] == 3'b001) || (mic_data[63:61] == 3'b000)) begin
+			M3_state<= S_00X;
+		end
+		
+		//01x
+		
+		if ((mic_data[63:61] == 3'b010) || (mic_data[63:61] == 3'b011)) begin
+			M3_state<= S_01X;
+		end
+		
+		//100
+		if (mic_data[63:61] == 3'b100) begin
+			M3_state<= S_100;
+		end
+		//101
+		if (mic_data[63:61] == 3'b101) begin
+			M3_state<= S_101;
+		end
+		
+		//110
+		if (mic_data[63:61] == 3'b110) begin
+			M3_state<= S_110;
+		end
+	
+		
+		end
+		
+	
+		
+		S_00X: begin
+		
+		// READ 8 BITS TO MAKE 9 BIT COEFFICIENT 
+		// TWO's complement
+		pre_dequant<= {mic_data[60],mic_data[60:53]};
+		// when element counter == 16 do a NEW SRAM READ
+			// 3 bit code + 8 bit value
+		shift_counter<= shift_counter + 8'd11;
+		element_counter <= element_counter + 8'd11;
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_01X: begin
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_100: begin
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_101: begin
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_110: begin
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_111: begin
+		
+		M3_state<= S_DEQUANT;
+		end
+		
+		S_DEQUANT: begin
+		ZZC_EN<=1;
+		
+		//cycle here to test functionality of ZZ counter
+		M3_state<= S_DEQUANT;
+		end
+		
+		
+		
+		
+	default: M3_state<= S_IDLE_M3;
+	endcase
+	end
+	
+end
+
+
+// for the ZZ counter
+always_ff @ (posedge Clock_50 or negedge Resetn) begin
+
+	if (~Resetn) begin
+	ZZC<=0;
+	end else begin
+	
+	// if en then count
+	ZZC<= ZZC;
+	if (ZZC_EN) begin
+	
+	case(ZZC)
+	
+		6'd0: ZZC<=6'd1;
+		6'd1: ZZC<=6'd8;
+		6'd8: ZZC<=6'd16;
+		6'd16: ZZC<=6'd9;
+		6'd9: ZZC<=6'd2;
+		6'd2: ZZC<=6'd3;
+		6'd3: ZZC<=6'd10;
+		6'd10: ZZC<=6'd17;
+		6'd17: ZZC<=6'd24;
+		6'd24: ZZC<=6'd32;
+		6'd32: ZZC<=6'd25;
+		6'd25: ZZC<=6'd18;
+		6'd18: ZZC<=6'd11;
+		6'd11: ZZC<=6'd4;
+		6'd4: ZZC<=6'd5;
+		6'd5: ZZC<=6'd12;
+		6'd12: ZZC<=6'd19;
+		6'd19: ZZC<=6'd26;
+		6'd26: ZZC<=6'd33;
+		6'd33: ZZC<=6'd40;
+		6'd40: ZZC<=6'd48;
+		6'd48: ZZC<=6'd41;
+		6'd41: ZZC<=6'd34;
+		6'd34: ZZC<=6'd27;
+		6'd27: ZZC<=6'd20;
+		6'd20: ZZC<=6'd13;
+		6'd13: ZZC<=6'd6;
+		6'd6: ZZC<=6'd7;
+		6'd7: ZZC<=6'd14;
+		6'd14: ZZC<=6'd21;
+		6'd21: ZZC<=6'd28;
+		6'd28: ZZC<=6'd35;
+		6'd35: ZZC<=6'd42;
+		6'd42: ZZC<=6'd49;
+		6'd49: ZZC<=6'd56;
+		6'd56: ZZC<=6'd57;
+		6'd57: ZZC<=6'd50;
+		6'd50: ZZC<=6'd43;
+		6'd43: ZZC<=6'd36;
+		6'd36: ZZC<=6'd29;
+		6'd29: ZZC<=6'd22;
+		6'd22: ZZC<=6'd15;
+		6'd15: ZZC<=6'd23;
+		6'd23: ZZC<=6'd30;
+		6'd30: ZZC<=6'd37;
+		6'd37: ZZC<=6'd44;
+		6'd44: ZZC<=6'd51;
+		6'd51: ZZC<=6'd58;
+		6'd58: ZZC<=6'd59;
+		6'd59: ZZC<=6'd52;
+		6'd52: ZZC<=6'd45;
+		6'd45: ZZC<=6'd38;
+		6'd38: ZZC<=6'd31;
+		6'd31: ZZC<=6'd39;
+		6'd39: ZZC<=6'd46;
+		6'd46: ZZC<=6'd45;
+		6'd45: ZZC<=6'd53;
+		6'd53: ZZC<=6'd60;
+		6'd60: ZZC<=6'd61;
+		6'd61: ZZC<=6'd54;
+		6'd54: ZZC<=6'd47;
+		6'd47: ZZC<=6'd55;
+		6'd55: ZZC<=6'd62;
+		6'd62: ZZC<=6'd63;
+		6'd63: ZZC<=6'd0;
+		
+		default : ZZC<= 6'd0;	
+		endcase
+	
+	
+	
+	
+	end
+	
+	
+	
+end
+end
+
+
+ 
+ 
+endmodule 
